@@ -1,5 +1,6 @@
 package com.lugg.lugg;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -131,6 +132,9 @@ public class MainActivity extends AppCompatActivity {
                             }
                         });
                         //Start new activity here if you want
+                        final Intent gridIntent = new Intent(getApplicationContext(), FlightActivity.class);
+                        startActivity(gridIntent);
+
                     }
 
                     @Override

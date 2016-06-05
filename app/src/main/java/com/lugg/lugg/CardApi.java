@@ -16,4 +16,13 @@ public interface CardApi {
 
     @POST("/lugg/register")
     Call<String> sendToken(@Body TransactionDetails transactionDetails);
+
+    @POST("/lugg/orderAuthorisation")
+    Call<String> authorize(@Body Authorization authorization);
+
+    @POST("/lugg/dropoff")
+    Call<String> dropOff(@Body DropOffLugg dropOffLugg);
+
+    @POST("/lugg/received")
+    Call<String> received(@Body ReceivedLugg receivedLugg);
 }

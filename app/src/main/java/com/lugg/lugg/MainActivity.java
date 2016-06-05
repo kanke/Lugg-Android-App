@@ -3,6 +3,7 @@ package com.lugg.lugg;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -111,13 +112,32 @@ public class MainActivity extends AppCompatActivity {
                         transactionDetails.setId(cardToken.getCard().getId()); // Change to customer Id here
                         transactionDetails.setMasterCardId(cardToken.getId());
 
+                        DropOffLugg dropOffLugg = new DropOffLugg();
 
-                        Gson gson = new Gson();
-                        String toJsonString = gson.toJson(transactionDetails, TransactionDetails.class);
+                        dropOffLugg.setId(cardToken.getCard().getId()); // Change to customer Id here
+                        dropOffLugg.setPickup("Heathrow%20Airport,%20Heathrow%20Airport");
+                        dropOffLugg.setDropoff("Old Street,%20City%20of%20London");
 
-                        Log.d(TAG,toJsonString);
+
+                        ReceivedLugg receivedLugg = new ReceivedLugg();
+                        receivedLugg.setId(cardToken.getCard().getId());
+
+                        Authorization authorization = new Authorization();
+                        authorization.setId(cardToken.getCard().getId());
+                        authorization.setCustomer("Yacine");
+
+
+                        //Troubleshooting
+//                        Gson gson = new Gson();
+//                        String toJsonString = gson.toJson(transactionDetails, TransactionDetails.class);
+//
+//                        Log.d(TAG,toJsonString);
 
                         Call call = cardApi.sendToken(transactionDetails);
+                        Call call3 = cardApi.authorize(authorization);
+                        Call call1 = cardApi.dropOff(dropOffLugg);
+                        Call call2 = cardApi.received(receivedLugg);
+
 
                         call.enqueue(new Callback() {
                             @Override
@@ -127,13 +147,61 @@ public class MainActivity extends AppCompatActivity {
 
                             @Override
                             public void onFailure(Call call, Throwable t) {
-                                Log.d(TAG, "Call failed!");
+                                Log.d(TAG, "Call failed! call"+ call.toString());
                                 t.printStackTrace();
                             }
                         });
-                        //Start new activity here if you want
-                        final Intent gridIntent = new Intent(getApplicationContext(), FlightActivity.class);
-                        startActivity(gridIntent);
+
+
+                        call1.enqueue(new Callback() {
+                            @Override
+                            public void onResponse(Call call1, Response response) {
+                                Log.d(TAG, "Success!" + call1.toString() + "Response" + response.message());
+                                response.body();
+                                System.out.println(response.body());
+                            }
+
+
+                            @Override
+                            public void onFailure(Call call1, Throwable t) {
+                                Log.d(TAG, "Call failed! call1"+ call1.toString());
+                                t.printStackTrace();
+                            }
+                        });
+
+
+                        call2.enqueue(new Callback() {
+                            @Override
+                            public void onResponse(Call call2, Response response) {
+                                Log.d(TAG, "Success!" + call2.toString() + "Response" + response.message());
+                            }
+
+                            @Override
+                            public void onFailure(Call call2, Throwable t) {
+                                Log.d(TAG, "Call failed! call2"+call2.toString());
+                                t.printStackTrace();
+                            }
+                        });
+
+                        call3.enqueue(new Callback() {
+                            @Override
+                            public void onResponse(Call call3, Response response) {
+                                Log.d(TAG, "Success!" + call3.toString() + "Response" + response.message());
+
+                                //Start new activity here if you want
+                                final Intent gridIntent = new Intent(getApplicationContext(), FlightActivity.class);
+                                startActivity(gridIntent);
+                            }
+
+                            @Override
+                            public void onFailure(Call call3, Throwable t) {
+                                Log.d(TAG, "Call failed! call3"+call3.toString());
+                                t.printStackTrace();
+                            }
+                        });
+
+
+
 
                     }
 
